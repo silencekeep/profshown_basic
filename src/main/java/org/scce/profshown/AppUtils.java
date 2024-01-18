@@ -1,11 +1,17 @@
 package org.scce.profshown;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.sql.*;
+import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AppUtils {
-    @NotNull
+    /*@NotNull
     public static String MySqlTest(String name) {
         Connection conn = null;
         try {
@@ -58,5 +64,37 @@ public class AppUtils {
             e.printStackTrace();
         }
         return sb.toString();
+    }*/
+    //Public utilities
+    public static Logger slf4jLogger = LoggerFactory.getLogger(AppUtils.class);
+    public static ObjectMapper objectMapper = new ObjectMapper();
+    //Public static functions
+    public static String ReadAllText(String fileName) throws IOException {
+        File f = new File(fileName);
+        StringBuilder sb = new StringBuilder();
+        FileInputStream fis = new FileInputStream(f);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader br = new BufferedReader(isr);
+        String line = "";
+        while ((line = br.readLine()) != null) {
+            sb.append(line).append("\n");
+        }
+        br.close();
+        return sb.toString();
+    }
+    public static void CreateConfigTemplate() throws IOException {
+        File f = new File("config.json");
+        FileOutputStream fs = new FileOutputStream(f);
+        OutputStreamWriter sr = new OutputStreamWriter(fs);
+        BufferedWriter br = new BufferedWriter(sr);
+        br.append(objectMapper.writeValueAsString(InitialConfiguration.InitConfig));
+        br.flush();
+        br.close();;
+    }
+    public static String GetRandomBase64(){
+        byte[] bytes = new byte[32];
+        ThreadLocalRandom.current().nextBytes(bytes);
+        String base64 = Base64.getEncoder().encodeToString(bytes);
+        return base64;
     }
 }
